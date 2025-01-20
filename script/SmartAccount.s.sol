@@ -4,12 +4,12 @@ pragma solidity ^0.8.13;
 import {Script, console} from "forge-std/Script.sol";
 import {SmartAccount} from "../src/SmartAccount.sol";
 import {BatchModule} from "../src/modules/BatchModule.sol";
-import {LimitModule} from "../src/modules/LimitModule.sol";
+import {GameFactoryModule} from "../src/modules/Games/GameFactoryModule.sol";
 
 contract SmartAccountScript is Script {
     SmartAccount public smartAccount;
     BatchModule public batch;
-    LimitModule public limit;
+    GameFactoryModule public gameFactory;
 
     address owner = address(0xCAFEBABE);
 
@@ -23,11 +23,11 @@ contract SmartAccountScript is Script {
 
         // Deploy BatchModule and LimitModule
         batch = new BatchModule(address(smartAccount));
-        limit = new LimitModule(address(smartAccount), 1 ether);
+        gameFactory = new GameFactoryModule(address(smartAccount));
 
         // Install modules in SmartAccount
         smartAccount.addModule(address(batch));
-        smartAccount.addModule(address(limit));
+        smartAccount.addModule(address(gameFactory));
 
         vm.stopBroadcast();
     }
