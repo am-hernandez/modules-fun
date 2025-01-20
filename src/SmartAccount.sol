@@ -31,7 +31,7 @@ contract SmartAccount {
 
     function execute(address target, bytes calldata data) external {
         require(modules[msg.sender], "Unauthorized module");
-        (bool success, ) = target.call(data);
+        (bool success,) = target.call(data);
         require(success, "Execution failed");
     }
 
