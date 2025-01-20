@@ -29,6 +29,10 @@ contract GameFactoryModule {
         return games;
     }
 
+    function getGamesOwned(address gameOwner) external view returns (address) {
+        return playerToGamesOwned[gameOwner];
+    }
+
     function getOwner() external view returns (address) {
         return owner;
     }
