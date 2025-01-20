@@ -4,12 +4,13 @@ pragma solidity ^0.8.13;
 import {Test, console} from "forge-std/Test.sol";
 import {SmartAccount} from "../src/SmartAccount.sol";
 import {BatchModule} from "../src/modules/BatchModule.sol";
-import {GameModule} from "../src/modules/GameModule.sol";
+import {GameFactoryModule} from "../src/modules/Games/GameFactoryModule.sol";
+import {Game} from "../src/modules/Games/Game.sol";
 
 contract SmartAccountTest is Test {
     SmartAccount account;
     BatchModule batch;
-    GameModule game;
+    GameFactoryModule game;
 
     address owner = address(0xCAFEBABE);
     address user = address(0x123456);
@@ -19,7 +20,7 @@ contract SmartAccountTest is Test {
 
         account = new SmartAccount(owner);
         batch = new BatchModule(address(account));
-        game = new GameModule(address(account));
+        game = new GameFactoryModule(address(account));
 
         account.addModule(address(batch));
         account.addModule(address(game));
@@ -33,7 +34,7 @@ contract SmartAccountTest is Test {
         bool gameModuleInstalled = account.modules(address(game));
 
         console.log("BatchModule installed:", batchModuleInstalled);
-        console.log("GameModule installed:", gameModuleInstalled);
+        console.log("GameFactoryModule installed:", gameModuleInstalled);
 
         assertTrue(batchModuleInstalled);
         assertTrue(gameModuleInstalled);
@@ -52,33 +53,28 @@ contract SmartAccountTest is Test {
         vm.stopPrank();
     }
 
-    function testGameModuleExecution() public {
-        vm.startPrank(address(account));
+    function testGameFactoryModuleShouldDeployGame() public {
+        vm.startPrank(address(user));
 
-        uint256 numberAtStart = game.number();
-        game.incrementNumber();
-        game.incrementNumber();
-        game.incrementNumber();
-        uint256 numberAtEnd = game.number();
-
-        console.log("numberAtStart:", numberAtStart);
-        console.log("numberAtEnd:", numberAtEnd);
-
-        assertTrue(numberAtEnd == 3);
+        Game deployedGame = game.createGame();
+        console.log("Game:", address(deployedGame));
 
         vm.stopPrank();
     }
 
-    function testCanWinGameModule() public {
-        vm.startPrank(address(account));
+    function testCanWinGame() public {
+        vm.startPrank(address(user));
 
-        uint256 numberAtStart = game.number();
+        Game deployedGame = game.createGame();
+        console.log("Game:", address(deployedGame));
+
+        uint256 numberAtStart = deployedGame.number();
         for (uint256 i = 0; i < 10; i++) {
-            game.incrementNumber();
+            deployedGame.incrementNumber();
         }
-        uint256 numberAtEnd = game.number();
+        uint256 numberAtEnd = deployedGame.number();
 
-        bool isGoalReached = game.getIsGoalReached();
+        bool isGoalReached = deployedGame.getIsGoalReached();
 
         console.log("numberAtStart:", numberAtStart);
         console.log("numberAtEnd:", numberAtEnd);
@@ -90,15 +86,18 @@ contract SmartAccountTest is Test {
     }
 
     function testIncrementingAfterGoalReachedShouldFail() public {
-        vm.startPrank(address(account));
+        vm.startPrank(address(user));
+
+        Game deployedGame = game.createGame();
+        console.log("Game:", address(deployedGame));
 
         for (uint256 i = 0; i < 10; i++) {
-            game.incrementNumber();
+            deployedGame.incrementNumber();
         }
 
         // Incrementing after reaching goal should fail
         vm.expectRevert("Goal already reached. Game has ended");
-        game.incrementNumber();
+        deployedGame.incrementNumber();
 
         vm.stopPrank();
     }
