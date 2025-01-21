@@ -7,11 +7,7 @@ contract SmartAccount {
 
     event ModuleAdded(address indexed module);
     event ModuleRemoved(address indexed module);
-    event ModuleExecuted(
-        address indexed module,
-        address indexed user,
-        bytes data
-    );
+    event ModuleExecuted(address indexed module, address indexed user, bytes data);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Not the owner");
@@ -36,7 +32,7 @@ contract SmartAccount {
 
     function executeModule(address target, bytes calldata data) external {
         require(modules[msg.sender], "Unauthorized module");
-        (bool success, ) = target.call(data);
+        (bool success,) = target.call(data);
         require(success, "Execution failed");
 
         emit ModuleExecuted(msg.sender, target, data);
