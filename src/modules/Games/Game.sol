@@ -7,6 +7,9 @@ contract Game {
     uint256 private constant _numberGoal = 10;
     bool public isGoalReached = false;
 
+    event NumberIncremented(uint256 number);
+    event GoalReached(address owner, uint256 number, uint256 _numberGoal);
+
     modifier goalNotReached() {
         require(isGoalReached == false, "Goal already reached. Game has ended");
         _;
@@ -26,6 +29,7 @@ contract Game {
 
         if (number == _numberGoal) {
             isGoalReached = true;
+            emit GoalReached(owner, number, _numberGoal);
         }
     }
 
