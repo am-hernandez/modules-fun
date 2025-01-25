@@ -4,13 +4,13 @@ pragma solidity ^0.8.13;
 import {Test, console} from "forge-std/Test.sol";
 import {SmartAccount} from "../src/SmartAccount.sol";
 import {BatchModule} from "../src/modules/BatchModule.sol";
-import {GameFactoryModule} from "../src/modules/Games/GameFactoryModule.sol";
-import {Game} from "../src/modules/Games/Game.sol";
+import {ReachNumberFactoryModule} from "../src/modules/Games/ReachNumber/ReachNumberFactoryModule.sol";
+import {ReachNumber} from "../src/modules/Games/ReachNumber/ReachNumber.sol";
 
 contract SmartAccountTest is Test {
     SmartAccount account;
     BatchModule batch;
-    GameFactoryModule game;
+    ReachNumberFactoryModule game;
 
     address owner = address(0xCAFEBABE);
     address user = address(0x123456);
@@ -20,7 +20,7 @@ contract SmartAccountTest is Test {
 
         account = new SmartAccount(owner);
         batch = new BatchModule(address(account));
-        game = new GameFactoryModule(address(account));
+        game = new ReachNumberFactoryModule(address(account));
 
         account.addModule(address(batch));
         account.addModule(address(game));
@@ -34,7 +34,7 @@ contract SmartAccountTest is Test {
         bool gameModuleInstalled = account.modules(address(game));
 
         console.log("BatchModule installed:", batchModuleInstalled);
-        console.log("GameFactoryModule installed:", gameModuleInstalled);
+        console.log("ReachNumberFactoryModule installed:", gameModuleInstalled);
 
         assertTrue(batchModuleInstalled);
         assertTrue(gameModuleInstalled);
@@ -53,10 +53,10 @@ contract SmartAccountTest is Test {
         vm.stopPrank();
     }
 
-    function testGameFactoryModuleShouldDeployGame() public {
+    function testReachNumberFactoryModuleShouldDeployGame() public {
         vm.startPrank(address(user));
 
-        Game deployedGame = game.createGame();
+        ReachNumber deployedGame = game.createGame();
         console.log("Game:", address(deployedGame));
 
         vm.stopPrank();
@@ -65,7 +65,7 @@ contract SmartAccountTest is Test {
     function testCanWinGame() public {
         vm.startPrank(address(user));
 
-        Game deployedGame = game.createGame();
+        ReachNumber deployedGame = game.createGame();
         console.log("Game:", address(deployedGame));
 
         uint256 numberAtStart = deployedGame.number();
@@ -88,7 +88,7 @@ contract SmartAccountTest is Test {
     function testIncrementingAfterGoalReachedShouldFail() public {
         vm.startPrank(address(user));
 
-        Game deployedGame = game.createGame();
+        ReachNumber deployedGame = game.createGame();
         console.log("Game:", address(deployedGame));
 
         for (uint256 i = 0; i < 10; i++) {

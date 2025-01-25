@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-contract Game {
+contract ReachNumber {
     address public owner;
     uint256 public number;
     uint256 private constant _numberGoal = 10;

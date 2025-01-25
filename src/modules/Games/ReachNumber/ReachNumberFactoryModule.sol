@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {Game} from "./Game.sol";
+import {ReachNumber} from "./ReachNumber.sol";
 
-/// @title GameFactoryModule
+/// @title ReachNumberFactoryModule
 /// @notice This contract allows users to create and manage games.
-contract GameFactoryModule {
+contract ReachNumberFactoryModule {
     address public owner;
     address[] public games;
     mapping(address => address) public playerToGamesOwned;
@@ -27,8 +27,8 @@ contract GameFactoryModule {
     /// @notice Creates a new game and assigns it to the caller.
     /// @dev Emits a GameCreated event with the game address and owner address.
     /// @return game The address of the newly created game.
-    function createGame() external returns (Game) {
-        Game game = new Game(msg.sender);
+    function createGame() external returns (ReachNumber) {
+        ReachNumber game = new ReachNumber(msg.sender);
         games.push(address(game));
         playerToGamesOwned[msg.sender] = address(game);
 
